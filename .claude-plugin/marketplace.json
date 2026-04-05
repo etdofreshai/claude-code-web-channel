@@ -1,0 +1,20 @@
+{
+  "name": "etdofreshai-plugins",
+  "owner": {
+    "name": "etdofreshai",
+    "email": "vigneshnatarajan92@gmail.com"
+  },
+  "metadata": {
+    "description": "Custom Claude Code plugins by etdofreshai"
+  },
+  "plugins": [
+    {
+      "name": "web",
+      "source": ".",
+      "description": "Web channel for Claude Code — browser-based chat UI with built-in access control.",
+      "version": "0.0.1",
+      "keywords": ["web", "browser", "chat", "channel", "mcp"],
+      "category": "channels"
+    }
+  ]
+}
