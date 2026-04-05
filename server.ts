@@ -128,6 +128,13 @@ type GateResult =
 
 function gateSession(sessionId: string): GateResult {
   if (!sessionId) return { action: 'deny' }
+  // When relay is connected (standalone + relay active), auto-allow all sessions
+  // The relay itself is token-authenticated, so this is safe
+  if (STANDALONE && relayRemote) {
+    const a = loadAccess()
+    if (!a.allowFrom.includes(sessionId)) { a.allowFrom.push(sessionId); saveAccess(a) }
+    return { action: 'deliver' }
+  }
   const a = loadAccess()
   pruneExpired(a)
   if (a.allowFrom.includes(sessionId)) return { action: 'deliver' }

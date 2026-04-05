@@ -12,7 +12,7 @@
       "name": "web",
       "source": "./",
       "description": "Web channel for Claude Code — browser-based chat UI with built-in access control.",
-      "version": "0.0.4",
+      "version": "0.0.5",
       "keywords": ["web", "browser", "chat", "channel", "mcp"],
       "category": "channels"
     }
