@@ -148,7 +148,11 @@ function handleWsMessage(msg) {
         entry.data.text = msg.text
         const body = entry.el.querySelector('.bubble-text')
         if (body) {
-          body.textContent = msg.text
+          if (entry.data.from === 'assistant' && typeof marked !== 'undefined') {
+            body.innerHTML = marked.parse(msg.text)
+          } else {
+            body.textContent = msg.text
+          }
           // Add edited indicator
           if (!entry.el.querySelector('.edited')) {
             const edited = document.createElement('span')
@@ -215,7 +219,11 @@ function renderMessage(m) {
 
   const textSpan = document.createElement('span')
   textSpan.className = 'bubble-text'
-  textSpan.textContent = m.text || ''
+  if (m.from === 'assistant' && typeof marked !== 'undefined') {
+    textSpan.innerHTML = marked.parse(m.text || '')
+  } else {
+    textSpan.textContent = m.text || ''
+  }
   bubble.appendChild(textSpan)
 
   // File attachment

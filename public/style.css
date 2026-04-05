@@ -382,6 +382,111 @@ details summary {
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
 
+/* ─── Markdown in assistant messages ──────────────────────────────────────── */
+.message.assistant .bubble-text { white-space: normal; }
+
+.bubble-text p { margin: 0.4em 0; }
+.bubble-text p:first-child { margin-top: 0; }
+.bubble-text p:last-child { margin-bottom: 0; }
+
+.bubble-text h1,
+.bubble-text h2,
+.bubble-text h3,
+.bubble-text h4,
+.bubble-text h5,
+.bubble-text h6 {
+  color: var(--text-bright);
+  margin: 0.6em 0 0.3em;
+  line-height: 1.3;
+}
+.bubble-text h1 { font-size: 1.3em; }
+.bubble-text h2 { font-size: 1.15em; }
+.bubble-text h3 { font-size: 1.05em; }
+.bubble-text h4,
+.bubble-text h5,
+.bubble-text h6 { font-size: 1em; }
+
+.bubble-text pre {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.8em 1em;
+  overflow-x: auto;
+  margin: 0.5em 0;
+}
+
+.bubble-text pre > code {
+  background: none;
+  padding: 0;
+  border-radius: 0;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.9em;
+  color: var(--text);
+}
+
+.bubble-text code {
+  background: var(--surface-hover);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.9em;
+}
+
+.bubble-text ul,
+.bubble-text ol {
+  padding-left: 1.5em;
+  margin: 0.4em 0;
+}
+
+.bubble-text li { margin: 0.2em 0; }
+
+.bubble-text table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0.5em 0;
+  font-size: 0.95em;
+}
+
+.bubble-text th,
+.bubble-text td {
+  border: 1px solid var(--border);
+  padding: 0.4em 0.7em;
+  text-align: left;
+}
+
+.bubble-text th {
+  background: var(--surface);
+  color: var(--text-bright);
+  font-weight: 600;
+}
+
+.bubble-text blockquote {
+  border-left: 3px solid var(--accent);
+  padding: 0.3em 0.8em;
+  margin: 0.5em 0;
+  color: var(--text-dim);
+}
+
+.bubble-text strong { color: var(--text-bright); }
+.bubble-text em { color: var(--text); }
+
+.bubble-text a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.bubble-text a:hover { text-decoration: underline; }
+
+.bubble-text img {
+  max-width: 100%;
+  border-radius: var(--radius-sm);
+}
+
+.bubble-text hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 0.6em 0;
+}
+
 /* ─── Responsive ──────────────────────────────────────────────────────────── */
 @media (max-width: 600px) {
   .message { max-width: 90%; }
