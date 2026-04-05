@@ -755,6 +755,11 @@ const httpServer = Bun.serve<WsData>({
 
 process.stderr.write(`web channel: http://localhost:${PORT}\n`)
 
+// Keep process alive in standalone mode (no stdin to hold it open)
+if (STANDALONE) {
+  setInterval(() => {}, 1 << 30)
+}
+
 // ─── Graceful shutdown ───────────────────────────────────────────────────────
 
 let shuttingDown = false
