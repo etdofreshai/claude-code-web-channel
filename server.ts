@@ -568,7 +568,7 @@ const pendingClients = new Map<ServerWebSocket<WsData>, string>()
 
 const httpServer = Bun.serve<WsData>({
   port: PORT,
-  hostname: '127.0.0.1',
+  hostname: process.env.WEB_CHANNEL_HOST ?? '127.0.0.1',
   fetch(req, server) {
     const url = new URL(req.url)
     const cookies = parseCookies(req.headers.get('cookie') ?? '')

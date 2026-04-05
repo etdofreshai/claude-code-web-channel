@@ -7,6 +7,7 @@ RUN bun install --production --no-summary
 COPY . .
 
 ENV WEB_CHANNEL_PORT=3000
+ENV WEB_CHANNEL_HOST=0.0.0.0
 ENV WEB_STATE_DIR=/data
 EXPOSE 3000
 
