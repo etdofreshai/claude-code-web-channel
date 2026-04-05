@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Claude Web Chat</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <!-- Pairing screen -->
+  <div id="pairing-screen" class="screen hidden">
+    <div class="pairing-card">
+      <div class="pairing-icon">🔗</div>
+      <h2>Pair this browser</h2>
+      <p>Run this command in your Claude Code terminal:</p>
+      <div class="code-block">
+        <code>/web:access pair <span id="pairing-code">------</span></code>
+        <button id="copy-code" title="Copy command">📋</button>
+      </div>
+      <p class="hint">The code expires in 1 hour. Waiting for approval...</p>
+      <div class="spinner"></div>
+    </div>
+  </div>
+
+  <!-- Denied screen -->
+  <div id="denied-screen" class="screen hidden">
+    <div class="pairing-card">
+      <div class="pairing-icon">🚫</div>
+      <h2>Access Denied</h2>
+      <p>This channel is not accepting new connections. Ask the owner to add you via <code>/web:access</code>.</p>
+    </div>
+  </div>
+
+  <!-- Chat screen -->
+  <div id="chat-screen" class="screen hidden">
+    <header>
+      <div class="header-left">
+        <h1>Claude Web Chat</h1>
+      </div>
+      <div class="header-right">
+        <span id="status" class="status disconnected">disconnected</span>
+      </div>
+    </header>
+
+    <main id="messages">
+      <div id="messages-inner"></div>
+    </main>
+
+    <footer>
+      <div class="compose">
+        <button id="attach-btn" type="button" title="Attach file">📎</button>
+        <input type="file" id="file-input" hidden>
+        <div class="compose-input">
+          <textarea id="text-input" rows="1" placeholder="Message Claude..." autocomplete="off"></textarea>
+          <span id="file-chip" class="file-chip hidden"></span>
+        </div>
+        <button id="send-btn" type="button" title="Send">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+          </svg>
+        </button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Permission modal -->
+  <div id="permission-modal" class="modal hidden">
+    <div class="modal-content">
+      <h3>Permission Request</h3>
+      <p class="permission-tool" id="perm-tool"></p>
+      <p class="permission-desc" id="perm-desc"></p>
+      <details>
+        <summary>Details</summary>
+        <pre id="perm-input" class="permission-input"></pre>
+      </details>
+      <div class="modal-actions">
+        <button id="perm-deny" class="btn btn-deny">Deny</button>
+        <button id="perm-allow" class="btn btn-allow">Allow</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
