@@ -30,7 +30,7 @@ const PLUGIN_ROOT = import.meta.dir
 
 // Load .env FIRST so all constants below can use values from it
 try {
-  chmodSync(ENV_FILE, 0o600)
+  try { chmodSync(ENV_FILE, 0o600) } catch {} // chmod may fail on Windows — that's OK
   for (const line of readFileSync(ENV_FILE, 'utf8').split('\n')) {
     const m = line.match(/^(\w+)=(.*)$/)
     if (m && process.env[m[1]] === undefined) process.env[m[1]] = m[2]
