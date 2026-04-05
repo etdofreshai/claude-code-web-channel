@@ -24,28 +24,11 @@ import type { ServerWebSocket } from 'bun'
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const PORT = Number(process.env.WEB_CHANNEL_PORT ?? 8788)
 const STATE_DIR = process.env.WEB_STATE_DIR ?? join(homedir(), '.claude', 'channels', 'web')
-const ACCESS_FILE = join(STATE_DIR, 'access.json')
-const MESSAGES_FILE = join(STATE_DIR, 'messages.json')
-const INBOX_DIR = join(STATE_DIR, 'inbox')
-const OUTBOX_DIR = join(STATE_DIR, 'outbox')
-const APPROVED_DIR = join(STATE_DIR, 'approved')
 const ENV_FILE = join(STATE_DIR, '.env')
-const STATIC = process.env.WEB_ACCESS_MODE === 'static'
-const STANDALONE = !!process.env.WEB_STANDALONE
 const PLUGIN_ROOT = import.meta.dir
 
-// Relay config
-const WEB_RELAY_TOKEN = process.env.WEB_RELAY_TOKEN ?? ''
-const WEB_RELAY_URL = process.env.WEB_RELAY_URL ?? ''  // e.g. wss://claude-code-web-channel.etdofresh.com/relay
-
-mkdirSync(STATE_DIR, { recursive: true })
-mkdirSync(INBOX_DIR, { recursive: true })
-mkdirSync(OUTBOX_DIR, { recursive: true })
-mkdirSync(APPROVED_DIR, { recursive: true })
-
-// Load .env (optional)
+// Load .env FIRST so all constants below can use values from it
 try {
   chmodSync(ENV_FILE, 0o600)
   for (const line of readFileSync(ENV_FILE, 'utf8').split('\n')) {
@@ -53,6 +36,24 @@ try {
     if (m && process.env[m[1]] === undefined) process.env[m[1]] = m[2]
   }
 } catch {}
+
+const PORT = Number(process.env.WEB_CHANNEL_PORT ?? 8788)
+const ACCESS_FILE = join(STATE_DIR, 'access.json')
+const MESSAGES_FILE = join(STATE_DIR, 'messages.json')
+const INBOX_DIR = join(STATE_DIR, 'inbox')
+const OUTBOX_DIR = join(STATE_DIR, 'outbox')
+const APPROVED_DIR = join(STATE_DIR, 'approved')
+const STATIC = process.env.WEB_ACCESS_MODE === 'static'
+const STANDALONE = !!process.env.WEB_STANDALONE
+
+// Relay config
+const WEB_RELAY_TOKEN = process.env.WEB_RELAY_TOKEN ?? ''
+const WEB_RELAY_URL = process.env.WEB_RELAY_URL ?? ''
+
+mkdirSync(STATE_DIR, { recursive: true })
+mkdirSync(INBOX_DIR, { recursive: true })
+mkdirSync(OUTBOX_DIR, { recursive: true })
+mkdirSync(APPROVED_DIR, { recursive: true })
 
 // ─── Safety nets ─────────────────────────────────────────────────────────────
 
