@@ -287,6 +287,7 @@ if (!STANDALONE) {
     const { Server } = await import('@modelcontextprotocol/sdk/server/index.js')
     const { StdioServerTransport } = await import('@modelcontextprotocol/sdk/server/stdio.js')
     const { ListToolsRequestSchema, CallToolRequestSchema } = await import('@modelcontextprotocol/sdk/types.js')
+    const { z } = await import('zod')
 
     mcp = new Server(
       { name: 'web', version: '1.0.0' },
@@ -297,7 +298,15 @@ if (!STANDALONE) {
     )
 
     mcp.setNotificationHandler(
-      { method: 'notifications/claude/channel/permission_request' } as any,
+      z.object({
+        method: z.literal('notifications/claude/channel/permission_request'),
+        params: z.object({
+          request_id: z.string(),
+          tool_name: z.string(),
+          description: z.string(),
+          input_preview: z.string(),
+        }),
+      }),
       async (notification: any) => {
         const params = notification.params ?? {}
         const { request_id, tool_name, description, input_preview } = params
