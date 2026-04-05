@@ -434,11 +434,22 @@ function handleRelayMessage(data: any): void {
       break
     }
     case 'inbound_file': {
-      const { id, text, sessionId, file_name } = data
+      const { id, text, sessionId, file_name, file_data } = data
+      let file: { path: string; name: string } | undefined
+      // Decode base64 file data and save locally so Claude can read it
+      if (file_data && file_name) {
+        try {
+          mkdirSync(INBOX_DIR, { recursive: true })
+          const ext = extname(file_name).toLowerCase() || '.bin'
+          const path = join(INBOX_DIR, `${Date.now()}${ext}`)
+          writeFileSync(path, Buffer.from(file_data, 'base64'))
+          file = { path, name: file_name }
+        } catch {}
+      }
       const msg: StoredMessage = { id, from: 'user', text: text || `(${file_name ?? 'attachment'})`, ts: Date.now(), sessionId }
       appendMessage(msg)
       broadcast({ type: 'msg', ...msg })
-      deliver(id, text || `(uploaded file: ${file_name})`, sessionId)
+      deliver(id, text || '', sessionId, file)
       break
     }
     case 'permission_reply': {
@@ -606,8 +617,18 @@ const httpServer = Bun.serve<WsData>({
         appendMessage(msg)
         broadcast({ type: 'msg', ...msg })
         deliver(id, text, sessionId, file)
-        // Forward to relay (Dokploy → local plugin)
-        sendToRelayRemote({ type: 'inbound_file', id, text, sessionId, file_path: file?.path ?? '', file_name: file?.name ?? '' })
+        // Forward to relay (Dokploy → local plugin) — include file data as base64
+        if (file) {
+          try {
+            const fileData = readFileSync(file.path)
+            const base64 = Buffer.from(fileData).toString('base64')
+            sendToRelayRemote({ type: 'inbound_file', id, text, sessionId, file_name: file.name, file_data: base64 })
+          } catch {
+            sendToRelayRemote({ type: 'inbound_file', id, text, sessionId, file_name: file.name })
+          }
+        } else {
+          sendToRelayRemote({ type: 'inbound', id, text, sessionId })
+        }
         return new Response(null, { status: 204 })
       })()
     }
