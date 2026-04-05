@@ -473,17 +473,18 @@ mcp.setRequestHandler(CallToolRequestSchema, async req => {
 
 // ─── MCP connect ─────────────────────────────────────────────────────────────
 
-// When running standalone (e.g. in Docker without Claude Code), stdin may be
-// closed or absent. We try to connect MCP but gracefully degrade to web-only
-// mode if it fails.
+// When WEB_STANDALONE=1 (e.g. Docker/Dokploy), skip MCP and run as a pure
+// web UI. Otherwise connect MCP over stdio to Claude Code.
+const STANDALONE = !!process.env.WEB_STANDALONE
 let mcpConnected = false
-try {
-  if (process.stdin.isTTY !== undefined || !process.env.WEB_STANDALONE) {
+
+if (!STANDALONE) {
+  try {
     await mcp.connect(new StdioServerTransport())
     mcpConnected = true
+  } catch (err) {
+    process.stderr.write(`web channel: MCP connect failed: ${err}\n`)
   }
-} catch (err) {
-  process.stderr.write(`web channel: MCP connect skipped (standalone mode): ${err}\n`)
 }
 
 if (!mcpConnected) {
