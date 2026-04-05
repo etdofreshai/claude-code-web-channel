@@ -473,11 +473,27 @@ mcp.setRequestHandler(CallToolRequestSchema, async req => {
 
 // ─── MCP connect ─────────────────────────────────────────────────────────────
 
-await mcp.connect(new StdioServerTransport())
+// When running standalone (e.g. in Docker without Claude Code), stdin may be
+// closed or absent. We try to connect MCP but gracefully degrade to web-only
+// mode if it fails.
+let mcpConnected = false
+try {
+  if (process.stdin.isTTY !== undefined || !process.env.WEB_STANDALONE) {
+    await mcp.connect(new StdioServerTransport())
+    mcpConnected = true
+  }
+} catch (err) {
+  process.stderr.write(`web channel: MCP connect skipped (standalone mode): ${err}\n`)
+}
+
+if (!mcpConnected) {
+  process.stderr.write('web channel: running in standalone mode (no Claude Code connection)\n')
+}
 
 // ─── Deliver inbound message to Claude ───────────────────────────────────────
 
 function deliver(id: string, text: string, sessionId: string, file?: { path: string; name: string }): void {
+  if (!mcpConnected) return
   void mcp.notification({
     method: 'notifications/claude/channel',
     params: {
@@ -724,7 +740,7 @@ const httpServer = Bun.serve<WsData>({
           deliver(id, text, sessionId)
         } else if (data.type === 'permission_reply') {
           const { request_id, behavior } = data
-          if (request_id && (behavior === 'allow' || behavior === 'deny')) {
+          if (mcpConnected && request_id && (behavior === 'allow' || behavior === 'deny')) {
             void mcp.notification({
               method: 'notifications/claude/channel/permission',
               params: { request_id, behavior },
@@ -748,7 +764,9 @@ function shutdown(): void {
   httpServer.stop()
   setTimeout(() => process.exit(0), 2000)
 }
-process.stdin.on('end', shutdown)
-process.stdin.on('close', shutdown)
+if (mcpConnected) {
+  process.stdin.on('end', shutdown)
+  process.stdin.on('close', shutdown)
+}
 process.on('SIGTERM', shutdown)
 process.on('SIGINT', shutdown)
